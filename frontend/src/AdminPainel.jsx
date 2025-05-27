@@ -18,7 +18,6 @@ export default function AdminPainel() {
       const res = await fetch('http://localhost:8081/admin/usuarios');
       if (!res.ok) throw new Error('Erro ao buscar usuários');
       const data = await res.json();
-      console.log('Dados recebidos:', data); // <- LOG
       setUsuarios(data);
     } catch (err) {
       console.error('Erro ao carregar usuários:', err);
@@ -36,6 +35,11 @@ export default function AdminPainel() {
     e.preventDefault();
     setMensagem('');
     setErro('');
+
+    if (!editandoId && !form.senha) {
+      setErro('Informe uma senha para o novo usuário');
+      return;
+    }
 
     try {
       const url = editandoId
@@ -61,8 +65,8 @@ export default function AdminPainel() {
         resetForm();
         carregarUsuarios();
       } else {
-        const data = await res.json();
-        setErro(data.error || 'Erro ao salvar usuário');
+        const texto = await res.text();
+        setErro(texto.error || 'Erro ao salvar usuário');
       }
     } catch (err) {
       console.error(err);
