@@ -46,7 +46,13 @@ Entre na pasta `usuario-service`
 Execute: `./mvnw spring-boot:run` ou `mvn spring-boot:run`  
 Verifique se as variáveis `supabase.url`, `supabase.key` e `supabase.serviceKey` estão configuradas no `application.yml`
 
-### 4. Iniciar o Frontend
+### 4. Iniciar o Microserviço de Registro
+
+Entre na pasta `registro-service`  
+Execute: `./mvnw spring-boot:run` ou `mvn spring-boot:run`  
+Verifique se as variáveis `supabase.url`, `supabase.key` e `supabase.serviceKey` estão configuradas no `application.yml`
+
+### 5. Iniciar o Frontend
 
 Entre na pasta `frontend`  
 Execute: `npm install`  
