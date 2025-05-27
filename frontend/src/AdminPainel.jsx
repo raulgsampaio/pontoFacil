@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from './supabaseClient';
 import './AdminPainel.css';
 
 export default function AdminPainel() {
@@ -10,20 +9,20 @@ export default function AdminPainel() {
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
 
-  useEffect(() => { carregarUsuarios(); }, []);
-
-  async function getToken() {
-    const session = await supabase.auth.getSession();
-    return session.data.session?.access_token;
-  }
+  useEffect(() => {
+    carregarUsuarios();
+  }, []);
 
   async function carregarUsuarios() {
-    const token = await getToken();
-    const res = await fetch('http://localhost:3000/admin/usuarios', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-    setUsuarios(data);
+    try {
+      const res = await fetch('http://localhost:8081/admin/usuarios');
+      if (!res.ok) throw new Error('Erro ao buscar usuários');
+      const data = await res.json();
+      setUsuarios(data);
+    } catch (err) {
+      console.error('Erro ao carregar usuários:', err);
+      setErro('Erro ao carregar usuários');
+    }
   }
 
   function resetForm() {
@@ -36,38 +35,42 @@ export default function AdminPainel() {
     e.preventDefault();
     setMensagem('');
     setErro('');
-    const token = await getToken();
 
-    if (editandoId) {
-      const confirmar = confirm('Confirmar alteração deste usuário?');
-      if (!confirmar) return;
+    if (!editandoId && !form.senha) {
+      setErro('Informe uma senha para o novo usuário');
+      return;
+    }
 
-      const res = await fetch(`http://localhost:3000/admin/usuarios/${editandoId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ nome: form.nome, email: form.email, tipo_usuario: form.tipo })
+    try {
+      const url = editandoId
+        ? `http://localhost:8081/admin/usuarios/${editandoId}`
+        : 'http://localhost:8081/admin/cadastrar-usuario';
+
+      const metodo = editandoId ? 'PUT' : 'POST';
+      const payload = {
+        nome: form.nome,
+        email: form.email,
+        tipo_usuario: form.tipo,
+        ...(editandoId ? {} : { senha: form.senha })
+      };
+
+      const res = await fetch(url, {
+        method: metodo,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
+
       if (res.ok) {
-        setMensagem('Usuário atualizado!');
+        setMensagem(editandoId ? 'Usuário atualizado!' : 'Usuário cadastrado!');
         resetForm();
         carregarUsuarios();
       } else {
-        setErro('Erro ao atualizar.');
+        const texto = await res.text();
+        setErro(texto.error || 'Erro ao salvar usuário');
       }
-    } else {
-      const res = await fetch('http://localhost:3000/admin/cadastrar-usuario', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ nome: form.nome, email: form.email, senha: form.senha, tipo_usuario: form.tipo })
-      });
-      if (res.ok) {
-        setMensagem('Usuário cadastrado!');
-        resetForm();
-        carregarUsuarios();
-      } else {
-        const data = await res.json();
-        setErro(data.error || 'Erro ao cadastrar.');
-      }
+    } catch (err) {
+      console.error(err);
+      setErro('Erro ao comunicar com o servidor');
     }
   }
 
@@ -75,16 +78,20 @@ export default function AdminPainel() {
     const confirmar = confirm('Deseja realmente excluir este usuário?');
     if (!confirmar) return;
 
-    const token = await getToken();
-    const res = await fetch(`http://localhost:3000/admin/usuarios/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (res.ok) {
-      setMensagem('Usuário removido.');
-      carregarUsuarios();
-    } else {
-      setErro('Erro ao excluir.');
+    try {
+      const res = await fetch(`http://localhost:8081/admin/usuarios/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (res.ok) {
+        setMensagem('Usuário removido.');
+        carregarUsuarios();
+      } else {
+        setErro('Erro ao excluir.');
+      }
+    } catch (err) {
+      console.error(err);
+      setErro('Erro ao comunicar com o servidor');
     }
   }
 
@@ -114,13 +121,7 @@ export default function AdminPainel() {
           <input type="text" placeholder="Nome" value={form.nome} onChange={e => setForm({ ...form, nome: e.target.value })} required />
           <input type="email" placeholder="E-mail" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
           {!editandoId && (
-            <input
-              type="password"
-              placeholder="Senha"
-              value={form.senha}
-              onChange={e => setForm({ ...form, senha: e.target.value })}
-              required
-            />
+            <input type="password" placeholder="Senha" value={form.senha} onChange={e => setForm({ ...form, senha: e.target.value })} required />
           )}
           <select value={form.tipo} onChange={e => setForm({ ...form, tipo: e.target.value })}>
             <option value="funcionario">Funcionário</option>
@@ -144,6 +145,11 @@ export default function AdminPainel() {
           </tr>
         </thead>
         <tbody>
+          {usuarios.length === 0 && (
+            <tr>
+              <td colSpan="4">Nenhum usuário encontrado</td>
+            </tr>
+          )}
           {usuarios.map(u => (
             <tr key={u.id}>
               <td>{u.nome}</td>
