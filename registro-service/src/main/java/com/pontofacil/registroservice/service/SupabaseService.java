@@ -1,15 +1,20 @@
 package com.pontofacil.registroservice.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pontofacil.registroservice.model.RegistroPonto;
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.OffsetDateTime;
-import java.util.UUID;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pontofacil.registroservice.model.RegistroPonto;
 
 @Service
 public class SupabaseService {
@@ -17,7 +22,7 @@ public class SupabaseService {
     @Value("${supabase.url}")
     private String supabaseUrl;
 
-    @Value("${supabase.key}")
+    @Value("${supabase.serviceKey}")
     private String supabaseKey;
 
     private final RestTemplate restTemplate = new RestTemplate();

@@ -9,3 +9,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+supabase:
+  url: https://pftrnhcoinkmgbgerqse.supabase.co
+  key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdHJuaGNvaW5rbWdiZ2VycXNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1OTM1MzgsImV4cCI6MjA2MzE2OTUzOH0.8QSpZ_Mx4HfXpHoDgndNRsJKj7FC3qcy24UyumV4YDg
+  serviceKey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdHJuaGNvaW5rbWdiZ2VycXNlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NzU5MzUzOCwiZXhwIjoyMDYzMTY5NTM4fQ.r8zB2FVsaGHYEuevmgkBhrVh6VNvB8AbbCJXbdiitKY
