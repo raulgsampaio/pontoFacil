@@ -13,19 +13,45 @@ export default function Login() {
     setErro('');
     setSucesso('');
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
+    const { error, data: session } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
       password: senha
     });
 
     if (error) {
+      console.error('Erro Supabase:', error.message, error);
       setErro('Login inválido. Verifique o e-mail e senha.');
-    } else {
-      setSucesso('Login realizado com sucesso!');
-      setTimeout(() => {
-        window.location.href = '/painel';
-      }, 1500);
+      return;
     }
+
+    setSucesso('Login realizado com sucesso!');
+
+    const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      setErro('Erro ao identificar usuário logado.');
+      return;
+    }
+
+    const { data, error: fetchError } = await supabase
+      .from('usuarios')
+      .select('tipo_usuario')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (fetchError || !data) {
+      setErro('Erro ao consultar tipo de usuário.');
+      return;
+    }
+
+    const destino = '/painel';
+
+    setTimeout(() => {
+      window.location.href = destino;
+    }, 1000);
   }
 
   return (

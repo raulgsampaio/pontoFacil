@@ -1,12 +1,14 @@
 package com.pontofacil.registroservice.service;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+
+import org.springframework.stereotype.Component;
+
 import com.pontofacil.registroservice.model.RegistroPonto;
 import com.pontofacil.registroservice.service.strategy.EntradaStrategy;
 import com.pontofacil.registroservice.service.strategy.RegistroStrategy;
 import com.pontofacil.registroservice.service.strategy.SaidaStrategy;
-import org.springframework.stereotype.Component;
-
-import java.time.OffsetDateTime;
 
 @Component
 public class RegistroFactory {
@@ -17,7 +19,10 @@ public class RegistroFactory {
         this.supabaseService = supabaseService;
     }
 
-    public RegistroPonto criarRegistro(String usuarioId) {
+    public RegistroPonto criarRegistro(String usuarioAuthId) {
+        // buscar o ID real (chave primária) com base no auth_id
+        String usuarioId = supabaseService.buscarIdPorAuthId(usuarioAuthId);
+
         RegistroPonto ultimo = supabaseService.buscarUltimoRegistro(usuarioId);
 
         RegistroStrategy strategy;
@@ -29,7 +34,7 @@ public class RegistroFactory {
 
         RegistroPonto novo = new RegistroPonto();
         novo.setUsuarioId(usuarioId);
-        novo.setDataHora(OffsetDateTime.now());
+        novo.setDataHora(OffsetDateTime.now(ZoneId.of("America/Fortaleza")));
         novo.setTipo(strategy.definirTipo());
 
         return novo;
