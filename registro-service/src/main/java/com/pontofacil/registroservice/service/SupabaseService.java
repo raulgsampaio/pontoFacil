@@ -74,4 +74,23 @@ public class SupabaseService {
             throw new RuntimeException("Erro ao buscar último registro");
         }
     }
+
+    public String buscarIdPorAuthId(String authId) {
+    try {
+        String url = supabaseUrl + "/rest/v1/usuarios?auth_id=eq." + authId + "&select=id";
+        HttpEntity<Void> request = new HttpEntity<>(headers());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+        JsonNode array = objectMapper.readTree(response.getBody());
+
+        if (array.isArray() && array.size() > 0) {
+            return array.get(0).get("id").asText();
+        }
+
+        throw new RuntimeException("Usuário não encontrado para auth_id: " + authId);
+    } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException("Erro ao buscar ID do usuário: " + e.getMessage());
+    }
+}
+
 }

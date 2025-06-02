@@ -2,12 +2,21 @@ package com.pontofacil.registroservice.model;
 
 import java.time.OffsetDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class RegistroPonto {
 
     private String id;
-    private String usuario_id;
+
+    @JsonProperty("usuario_id")
+    private String usuarioId;
+
     private String tipo;
-    private OffsetDateTime data_hora;
+
+    @JsonProperty("data_hora")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private OffsetDateTime dataHora;
 
     public String getId() {
         return id;
@@ -18,11 +27,11 @@ public class RegistroPonto {
     }
 
     public String getUsuarioId() {
-        return usuario_id;
+        return usuarioId;
     }
 
-    public void setUsuarioId(String usuario_id) {
-        this.usuario_id = usuario_id;
+    public void setUsuarioId(String usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public String getTipo() {
@@ -34,10 +43,10 @@ public class RegistroPonto {
     }
 
     public OffsetDateTime getDataHora() {
-        return data_hora;
+        return dataHora;
     }
 
-    public void setDataHora(OffsetDateTime data_hora) {
-        this.data_hora = data_hora;
+    public void setDataHora(OffsetDateTime dataHora) {
+        this.dataHora = dataHora;
     }
-} 
+}

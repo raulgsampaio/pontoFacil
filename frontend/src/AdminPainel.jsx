@@ -15,7 +15,7 @@ export default function AdminPainel() {
 
   async function carregarUsuarios() {
     try {
-      const res = await fetch('http://localhost:8081/admin/usuarios');
+      const res = await fetch('http://localhost:8080/admin/usuarios');
       if (!res.ok) throw new Error('Erro ao buscar usuários');
       const data = await res.json();
       setUsuarios(data);
@@ -43,8 +43,8 @@ export default function AdminPainel() {
 
     try {
       const url = editandoId
-        ? `http://localhost:8081/admin/usuarios/${editandoId}`
-        : 'http://localhost:8081/admin/cadastrar-usuario';
+        ? `http://localhost:8080/admin/usuarios/${editandoId}`
+        : 'http://localhost:8080/admin/cadastrar-usuario';
 
       const metodo = editandoId ? 'PUT' : 'POST';
       const payload = {
@@ -79,7 +79,7 @@ export default function AdminPainel() {
     if (!confirmar) return;
 
     try {
-      const res = await fetch(`http://localhost:8081/admin/usuarios/${id}`, {
+      const res = await fetch(`http://localhost:8080/admin/usuarios/${id}`, {
         method: 'DELETE'
       });
 

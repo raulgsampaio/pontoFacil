@@ -11,7 +11,11 @@ spring:
         - id: usuario-service
           uri: lb://usuario-service
           predicates:
-            - Path=/usuarios/**
+            - Path=/usuarios/**,/admin/**
+        - id: registro-service
+          uri: lb://registro-service
+          predicates:
+            - Path=/registros/**
 
 eureka:
   client:
