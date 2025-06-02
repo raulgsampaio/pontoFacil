@@ -35,6 +35,7 @@ public class SupabaseAuthService {
             Map<String, Object> body = new HashMap<>();
             body.put("email", email);
             body.put("password", senha);
+            body.put("email_confirm",true);
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
