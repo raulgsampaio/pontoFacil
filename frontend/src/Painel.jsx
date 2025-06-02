@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
 import AdminPainel from './AdminPainel';
+import { useNavigate } from 'react-router-dom';
 
 export default function Painel() {
   const [usuario, setUsuario] = useState(null);
   const [mensagem, setMensagem] = useState('');
   const [carregando, setCarregando] = useState(false);
   const [historico, setHistorico] = useState([]);
+  const [funcionarios, setFuncionarios] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function carregarUsuario() {
@@ -37,21 +41,35 @@ export default function Painel() {
   }, []);
 
   useEffect(() => {
-    if (!usuario || usuario.tipo_usuario !== 'funcionario') return;
+    if (!usuario) return;
 
-    async function carregarHistorico() {
-      const { data, error } = await supabase
-        .from('registros_ponto')
-        .select('*')
-        .eq('usuario_id', usuario.id)
-        .order('data_hora', { ascending: false });
+    if (usuario.tipo_usuario === 'funcionario') {
+      async function carregarHistorico() {
+        const { data, error } = await supabase
+          .from('registros_ponto')
+          .select('*')
+          .eq('usuario_id', usuario.id)
+          .order('data_hora', { ascending: false });
 
-      if (!error && data) {
-        setHistorico(data);
+        if (!error && data) {
+          setHistorico(data);
+        }
       }
+
+      carregarHistorico();
     }
 
-    carregarHistorico();
+    if (usuario.tipo_usuario === 'gestor') {
+      async function carregarFuncionarios() {
+        const { data, error } = await supabase
+          .from('usuarios')
+          .select('id, nome, email')
+          .eq('tipo_usuario', 'funcionario');
+        if (!error) setFuncionarios(data);
+      }
+
+      carregarFuncionarios();
+    }
   }, [usuario]);
 
   async function handleLogout() {
@@ -84,7 +102,6 @@ export default function Painel() {
   }
 
   function calcularTotalHoras(historico) {
-    // Ordena do mais antigo para o mais novo
     const registros = [...historico].sort((a, b) =>
       new Date(a.data_hora) - new Date(b.data_hora)
     );
@@ -98,7 +115,7 @@ export default function Painel() {
         const inicio = new Date(atual.data_hora);
         const fim = new Date(proximo.data_hora);
         totalMs += fim - inicio;
-        i++; // pula o par
+        i++;
       }
     }
 
@@ -132,7 +149,20 @@ export default function Painel() {
         )}
 
         {usuario?.tipo_usuario === 'gestor' && (
-          <p>Você está logado como <strong>Gestor</strong>. Pode consultar, editar e excluir registros de ponto.</p>
+          <>
+            <p>Você está logado como <strong>Gestor</strong>. Pode consultar, editar e excluir registros de ponto.</p>
+
+            <h4>Funcionários</h4>
+            <ul>
+              {funcionarios.map((f) => (
+                <li key={f.id}>
+                  <button onClick={() => navigate(`/gestor/funcionario/${f.id}`)}>
+                    {f.nome} ({f.email})
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
 
         {usuario?.tipo_usuario === 'funcionario' && (
@@ -145,37 +175,36 @@ export default function Painel() {
             {mensagem && <p>{mensagem}</p>}
 
             {historico.length > 0 && (
-              <div style={{
-                marginTop: 20,
-                padding: '10px 20px',
-                background: '#f0f8ff',
-                border: '1px solid #b0c4de',
-                borderRadius: 8,
-                display: 'inline-block'
-              }}>
-                <strong>Total de horas trabalhadas:</strong> {calcularTotalHoras(historico)}
-              </div>
+              <>
+                <div style={{
+                  marginTop: 20,
+                  padding: '10px 20px',
+                  background: '#f0f8ff',
+                  border: '1px solid #b0c4de',
+                  borderRadius: 8,
+                  display: 'inline-block'
+                }}>
+                  <strong>Total de horas trabalhadas:</strong> {calcularTotalHoras(historico)}
+                </div>
+                <div style={{
+                  marginTop: 10,
+                  padding: '10px 20px',
+                  background: '#f0f8ff',
+                  border: '1px solid #b0c4de',
+                  borderRadius: 8,
+                  display: 'inline-block'
+                }}>
+                  <strong>Último ponto registrado:</strong> {historico[0].tipo} às {new Date(historico[0].data_hora).toLocaleTimeString('pt-BR')}
+                </div>
+              </>
             )}
-            {historico.length > 0 && (
-              <div style={{
-                marginTop: 10,
-                padding: '10px 20px',
-                background: '#f0f8ff',
-                border: '1px solid #b0c4de',
-                borderRadius: 8,
-                display: 'inline-block'
-              }}>
-                <strong>Último ponto registrado:</strong> {historico[0].tipo} às {new Date(historico[0].data_hora).toLocaleTimeString('pt-BR')}
-              </div>
-            )}
-
 
             <h4 style={{ marginTop: 30 }}>Histórico de Pontos</h4>
             <table style={{ marginTop: 10, width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc' }}>Data e Hora</th>
-                  <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc' }}>Tipo</th>
+                  <th>Data e Hora</th>
+                  <th>Tipo</th>
                 </tr>
               </thead>
               <tbody>
