@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class LoggingAspect {
     private static final Logger log = LoggerFactory.getLogger(LoggingAspect.class);
 
-    @Before("execution(* com.pontofacil..controller..*(..)) || execution(* com.pontofacil..service..*(..))")
+@Before("execution(* com.pontofacil..controller..*(..))")
     public void logBefore(JoinPoint joinPoint) {
         log.info("Calling: {}", joinPoint.getSignature());
     }

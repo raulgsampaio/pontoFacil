@@ -14,7 +14,7 @@ Projeto da disciplina de Arquitetura de Sistemas (Unifor)
 - Backend integrado ao Supabase (REST e Auth Admin API)  
 - Suporte a autenticação com funções: `admin`, `gestor`, `funcionário`  
 - Aplicados os padrões: `MVC`, `DAO`, `Strategy`, `Factory`
-- POA **implementado** com `AspectJ` para logging de ações administrativas
+- Logging das chamadas dos controllers implementado via AOP com `AspectJ`
 - Todas as operações com o banco são feitas exclusivamente no backend, o frontend apenas consome as APIs
 
 ---
