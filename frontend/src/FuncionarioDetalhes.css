@@ -1,0 +1,36 @@
+.acoes-btns {
+  display: flex;
+  flex-direction: row; /* garante que os botões fiquem lado a lado */
+  gap: 6px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.acoes-btns button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1; /* impede quebra vertical */
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.acoes-btns button:hover {
+  background-color: #c7d2fe;
+}
+
+.acoes-btns button:nth-child(2) {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+
+.acoes-btns button:nth-child(2):hover {
+  background-color: #fecaca;
+}
