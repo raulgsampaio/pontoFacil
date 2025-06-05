@@ -67,6 +67,13 @@ Depois: `npm run dev`
   - `POST /admin/cadastrar-usuario`
   - `PUT /admin/usuarios/{id}`
   - `DELETE /admin/usuarios/{id}`
+  - `GET /usuarios/auth/{authId}`
+  - `GET /usuarios/{id}`
+  - `GET /usuarios/funcionarios`
+  - `GET /registros/usuario/{usuarioId}`
+  - `POST /registros/manual`
+  - `PUT /registros/{registroId}`
+  - `DELETE /registros/{registroId}`
 - No painel do Supabase:
   - Verifique os dados na tabela `usuarios`
   - Acesse a aba `Authentication > Users` para validar os usuários criados

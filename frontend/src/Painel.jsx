@@ -23,18 +23,15 @@ export default function Painel() {
 
       const authId = sessionData.user.id;
 
-      const { data: usuarioData, error } = await supabase
-        .from('usuarios')
-        .select('id, nome, tipo_usuario')
-        .eq('auth_id', authId)
-        .single();
-
-      if (error || !usuarioData) {
+      const res = await fetch(`http://localhost:8080/usuarios/auth/${authId}`);
+      if (!res.ok) {
         console.error('Usuário não encontrado');
         window.location.href = '/';
-      } else {
-        setUsuario({ ...usuarioData, auth_id: authId });
+        return;
       }
+      const arr = await res.json();
+      const usuarioData = Array.isArray(arr) ? arr[0] : arr;
+      setUsuario({ ...usuarioData, auth_id: authId });
     }
 
     carregarUsuario();
@@ -45,13 +42,9 @@ export default function Painel() {
 
     if (usuario.tipo_usuario === 'funcionario') {
       async function carregarHistorico() {
-        const { data, error } = await supabase
-          .from('registros_ponto')
-          .select('*')
-          .eq('usuario_id', usuario.id)
-          .order('data_hora', { ascending: false });
-
-        if (!error && data) {
+        const res = await fetch(`http://localhost:8080/registros/usuario/${usuario.id}`);
+        if (res.ok) {
+          const data = await res.json();
           setHistorico(data);
         }
       }
@@ -61,11 +54,11 @@ export default function Painel() {
 
     if (usuario.tipo_usuario === 'gestor') {
       async function carregarFuncionarios() {
-        const { data, error } = await supabase
-          .from('usuarios')
-          .select('id, nome, email')
-          .eq('tipo_usuario', 'funcionario');
-        if (!error) setFuncionarios(data);
+        const res = await fetch('http://localhost:8080/usuarios/funcionarios');
+        if (res.ok) {
+          const data = await res.json();
+          setFuncionarios(data);
+        }
       }
 
       carregarFuncionarios();

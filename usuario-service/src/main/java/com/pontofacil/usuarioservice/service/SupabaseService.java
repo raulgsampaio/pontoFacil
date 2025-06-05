@@ -48,6 +48,27 @@ public class SupabaseService {
         return response.getBody();
     }
 
+    public String buscarUsuarioPorId(String id) {
+        String url = supabaseUrl + "/rest/v1/usuarios?id=eq." + id + "&select=*";
+        HttpEntity<Void> entity = new HttpEntity<>(headers());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        return response.getBody();
+    }
+
+    public String buscarUsuarioPorAuthId(String authId) {
+        String url = supabaseUrl + "/rest/v1/usuarios?auth_id=eq." + authId + "&select=*";
+        HttpEntity<Void> entity = new HttpEntity<>(headers());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        return response.getBody();
+    }
+
+    public String listarFuncionarios() {
+        String url = supabaseUrl + "/rest/v1/usuarios?tipo_usuario=eq.funcionario";
+        HttpEntity<Void> entity = new HttpEntity<>(headers());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        return response.getBody();
+    }
+
     public String cadastrarUsuario(JsonNode json) {
         String url = supabaseUrl + "/rest/v1/usuarios";
         HttpEntity<String> entity = new HttpEntity<>(json.toString(), headers());

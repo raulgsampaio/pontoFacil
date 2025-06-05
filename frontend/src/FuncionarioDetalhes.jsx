@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from './supabaseClient';
 import './FuncionarioDetalhes.css';
 
 export default function FuncionarioDetalhes() {
@@ -17,21 +16,18 @@ export default function FuncionarioDetalhes() {
 
     useEffect(() => {
         async function carregarFuncionario() {
-            const { data } = await supabase
-                .from('usuarios')
-                .select('nome')
-                .eq('id', id)
-                .single();
-            setFuncionario(data);
+            const res = await fetch(`http://localhost:8080/usuarios/${id}`);
+            if (res.ok) {
+                const arr = await res.json();
+                setFuncionario(Array.isArray(arr) ? arr[0] : arr);
+            }
         }
 
         async function carregarRegistros() {
-            const { data } = await supabase
-                .from('registros_ponto')
-                .select('*')
-                .eq('usuario_id', id)
-                .order('data_hora', { ascending: false });
-            setRegistros(data);
+            const res = await fetch(`http://localhost:8080/registros/usuario/${id}`);
+            if (res.ok) {
+                setRegistros(await res.json());
+            }
         }
 
         carregarFuncionario();
@@ -39,20 +35,16 @@ export default function FuncionarioDetalhes() {
     }, [id]);
 
     const handleEditar = async (registroId, tipo, data_hora) => {
-        const { error } = await supabase
-            .from('registros_ponto')
-            .update({ tipo, data_hora })
-            .eq('id', registroId);
-
-        if (!error) {
+        const res = await fetch(`http://localhost:8080/registros/${registroId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tipo, data_hora })
+        });
+        if (res.ok) {
             setMensagem('Registro atualizado.');
             setModoEdicao(prev => ({ ...prev, [registroId]: false }));
-            const { data } = await supabase
-                .from('registros_ponto')
-                .select('*')
-                .eq('usuario_id', id)
-                .order('data_hora', { ascending: false });
-            setRegistros(data);
+            const nova = await (await fetch(`http://localhost:8080/registros/usuario/${id}`)).json();
+            setRegistros(nova);
         } else {
             setMensagem('Erro ao atualizar.');
         }
@@ -62,12 +54,11 @@ export default function FuncionarioDetalhes() {
         const confirmar = confirm('Deseja excluir este ponto?');
         if (!confirmar) return;
 
-        const { error } = await supabase
-            .from('registros_ponto')
-            .delete()
-            .eq('id', registroId);
+        const res = await fetch(`http://localhost:8080/registros/${registroId}`, {
+            method: 'DELETE'
+        });
 
-        if (!error) {
+        if (res.ok) {
             setMensagem('Registro excluído.');
             setRegistros(registros.filter(r => r.id !== registroId));
         } else {
@@ -87,19 +78,17 @@ export default function FuncionarioDetalhes() {
                     e.preventDefault();
                     if (!novoTipo || !novaDataHora) return;
 
-                    const { error } = await supabase
-                        .from('registros_ponto')
-                        .insert([{ usuario_id: id, tipo: novoTipo, data_hora: novaDataHora }]);
+                    const res = await fetch('http://localhost:8080/registros/manual', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ usuario_id: id, tipo: novoTipo, data_hora: novaDataHora })
+                    });
 
-                    if (!error) {
+                    if (res.ok) {
                         setMensagem('Registro adicionado.');
                         setNovoTipo('entrada');
                         setNovaDataHora('');
-                        const { data } = await supabase
-                            .from('registros_ponto')
-                            .select('*')
-                            .eq('usuario_id', id)
-                            .order('data_hora', { ascending: false });
+                        const data = await (await fetch(`http://localhost:8080/registros/usuario/${id}`)).json();
                         setRegistros(data);
                     } else {
                         setMensagem('Erro ao adicionar registro.');

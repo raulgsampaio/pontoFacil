@@ -48,6 +48,29 @@ public class SupabaseService {
         restTemplate.exchange(url, HttpMethod.POST, request, String.class);
     }
 
+    public String listarRegistrosPorUsuario(String usuarioId) {
+        String url = supabaseUrl + "/rest/v1/registros_ponto?usuario_id=eq." + usuarioId + "&order=data_hora.desc";
+        HttpEntity<Void> request = new HttpEntity<>(headers());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+        return response.getBody();
+    }
+
+    public String atualizarRegistro(String id, JsonNode json) {
+        String url = supabaseUrl + "/rest/v1/registros_ponto?id=eq." + id;
+        HttpHeaders headers = headers();
+        headers.set("Prefer", "return=representation");
+        HttpEntity<String> request = new HttpEntity<>(json.toString(), headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, request, String.class);
+        return response.getBody();
+    }
+
+    public String deletarRegistro(String id) {
+        String url = supabaseUrl + "/rest/v1/registros_ponto?id=eq." + id;
+        HttpEntity<Void> request = new HttpEntity<>(headers());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, request, String.class);
+        return response.getBody();
+    }
+
     public RegistroPonto buscarUltimoRegistro(String usuarioId) {
         try {
             String url = supabaseUrl + "/rest/v1/registros_ponto"
