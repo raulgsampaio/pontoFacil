@@ -13,8 +13,9 @@ Projeto da disciplina de Arquitetura de Sistemas (Unifor)
 - **frontend/**: aplicação React (Vite)  
 - Backend integrado ao Supabase (REST e Auth Admin API)  
 - Suporte a autenticação com funções: `admin`, `gestor`, `funcionário`  
-- Aplicados os padrões: `MVC`, `DAO`, `Strategy`, `Factory`  
+- Aplicados os padrões: `MVC`, `DAO`, `Strategy`, `Factory`
 - POA **implementado** com `AspectJ` para logging de ações administrativas
+- Todas as operações com o banco são feitas exclusivamente no backend, o frontend apenas consome as APIs
 
 ---
 
