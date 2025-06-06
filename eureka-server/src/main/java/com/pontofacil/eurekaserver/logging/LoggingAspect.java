@@ -14,6 +14,6 @@ public class LoggingAspect {
 
 @Before("execution(* com.pontofacil..controller..*(..))")
     public void logBefore(JoinPoint joinPoint) {
-        log.info("Calling: {}", joinPoint.getSignature());
+        System.out.println("[LOG] Executando método: " + joinPoint.getSignature().getName());
     }
 }
