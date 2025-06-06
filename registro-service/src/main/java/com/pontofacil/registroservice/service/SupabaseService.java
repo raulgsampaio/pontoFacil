@@ -9,6 +9,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,7 +28,12 @@ public class SupabaseService {
     @Value("${supabase.serviceKey}")
     private String supabaseKey;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
+    public SupabaseService() {
+        CloseableHttpClient client = HttpClients.createDefault();
+        this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(client));
+    }
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private HttpHeaders headers() {
