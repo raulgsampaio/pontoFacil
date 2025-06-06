@@ -35,10 +35,11 @@ export default function FuncionarioDetalhes() {
     }, [id]);
 
     const handleEditar = async (registroId, tipo, data_hora) => {
+        const isoDataHora = new Date(data_hora).toISOString();
         const res = await fetch(`http://localhost:8080/registros/${registroId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tipo, data_hora })
+            body: JSON.stringify({ tipo, data_hora: isoDataHora })
         });
         if (res.ok) {
             setMensagem('Registro atualizado.');
@@ -81,7 +82,11 @@ export default function FuncionarioDetalhes() {
                     const res = await fetch('http://localhost:8080/registros/manual', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ usuario_id: id, tipo: novoTipo, data_hora: novaDataHora })
+                        body: JSON.stringify({
+                            usuario_id: id,
+                            tipo: novoTipo,
+                            data_hora: new Date(novaDataHora).toISOString()
+                        })
                     });
 
                     if (res.ok) {
