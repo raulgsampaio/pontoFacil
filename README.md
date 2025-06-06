@@ -13,8 +13,9 @@ Projeto da disciplina de Arquitetura de Sistemas (Unifor)
 - **frontend/**: aplicação React (Vite)  
 - Backend integrado ao Supabase (REST e Auth Admin API)  
 - Suporte a autenticação com funções: `admin`, `gestor`, `funcionário`  
-- Aplicados os padrões: `MVC`, `DAO`, `Strategy`, `Factory`  
-- POA aplicado com `AspectJ` para logging de ações administrativas
+- Aplicados os padrões: `MVC`, `DAO`, `Strategy`, `Factory`
+- Logging das chamadas dos controllers implementado via AOP com `AspectJ`
+- Todas as operações com o banco são feitas exclusivamente no backend, o frontend apenas consome as APIs
 
 ---
 
@@ -66,6 +67,13 @@ Depois: `npm run dev`
   - `POST /admin/cadastrar-usuario`
   - `PUT /admin/usuarios/{id}`
   - `DELETE /admin/usuarios/{id}`
+  - `GET /usuarios/auth/{authId}`
+  - `GET /usuarios/{id}`
+  - `GET /usuarios/funcionarios`
+  - `GET /registros/usuario/{usuarioId}`
+  - `POST /registros/manual`
+  - `PUT /registros/{registroId}`
+  - `DELETE /registros/{registroId}`
 - No painel do Supabase:
   - Verifique os dados na tabela `usuarios`
   - Acesse a aba `Authentication > Users` para validar os usuários criados

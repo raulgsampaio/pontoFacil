@@ -36,13 +36,8 @@ export default function Login() {
       return;
     }
 
-    const { data, error: fetchError } = await supabase
-      .from('usuarios')
-      .select('tipo_usuario')
-      .eq('auth_id', user.id)
-      .single();
-
-    if (fetchError || !data) {
+    const res = await fetch(`http://localhost:8080/usuarios/auth/${user.id}`);
+    if (!res.ok) {
       setErro('Erro ao consultar tipo de usuário.');
       return;
     }
