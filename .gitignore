@@ -3,6 +3,7 @@
 /**/target
 **/*.iml
 .idea/
+.vscode/
 *.log
 .DS_Store
 node_modules
