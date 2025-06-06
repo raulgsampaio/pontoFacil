@@ -39,7 +39,7 @@ export default function FuncionarioDetalhes() {
         const res = await fetch(`http://localhost:8080/registros/${registroId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tipo, data_hora: isoDataHora })
+            body: JSON.stringify({ usuario_id: id, tipo, data_hora: isoDataHora })
         });
         if (res.ok) {
             setMensagem('Registro atualizado.');
